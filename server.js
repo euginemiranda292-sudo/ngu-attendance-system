@@ -50,7 +50,7 @@ async function sendTelerivetSMS(phone, message) {
 //========================================================||
 const io = new Server(server, {
   cors: {
-    origin: "https://sx01rkvb-3000.asse.devtunnels.ms/", 
+    origin: ["https://ngu-attendance-system.onrender.com", "http://localhost:3000"], 
     methods: ["GET", "POST"],
     credentials: true
   }
@@ -135,7 +135,7 @@ app.set('trust proxy', 1);
   //== Node.js backend securely, using cookies and login sessions. =============||
 //==============================================================================||
 app.use(cors({
-    origin: "https://sx01rkvb-3000.asse.devtunnels.ms",
+    origin: "https://ngu-attendance-system.onrender.com",
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
 }));
@@ -148,11 +148,13 @@ app.use(cors({
 const RECAPTCHA_SECRET = "6Ld4-dorAAAAAB4Ls6Krrl8L67gfCBLHRwJdrT8l";
 
 const sessionStore = new MySQLStore({
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "jobseekerregistration_db"
-}); 
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  ssl: { rejectUnauthorized: false }
+});
 
 
 //======================================================================================================||
@@ -206,7 +208,7 @@ transporter.verify(function (error, success) {
   //== THIS ROUTE IS WHEN A USER VISIT THE MAIN WEBSITE URL ("https://sx01rkvb-3000.asse.devtunnels.ms") ==||
 //=========================================================================================================||
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "https://sx01rkvb-3000.asse.devtunnels.ms"));
+  res.sendFile(path.join(__dirname, "login", "index.html"));
 });
 
 
