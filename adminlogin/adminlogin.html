@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <link rel="stylesheet" href="adminlogin.css">
+</head>
+<body>
+    <main class="container">
+        <section class="form-wrapper">
+            <h1>Admin Login</h1>
+            <form id="adminLoginForm">
+                <div class="field">
+                    <label>Email Address</label>
+                    <input type="email" id="email" required>
+                </div>
+                
+                <div class="field password-container">
+                    <label>Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="password" required>
+                        <button type="button" id="togglePassword">👁️</button>
+                    </div>
+                </div>
+
+                <button type="submit" id="loginBtn">Login</button>
+                <div id="loginMessage"></div>
+
+                <div class="signup-prompt">
+                    <p>Don't have an admin account?</p>
+                    <button type="button" id="signupRedirectBtn" class="secondary-btn">SIGN UP</button>
+                </div>
+
+                <div id="loadingOverlay" class="loading-overlay">
+                    <div class="spinner"></div>
+                    <p>Loading Registration...</p>
+                </div>
+            </form>
+        </section>
+    </main>
+    <script src="adminlogin.js"></script>
+</body>
+</html>

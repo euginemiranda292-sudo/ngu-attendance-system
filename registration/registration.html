@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Form</title>
+    <link rel="stylesheet" href="registration.css">
+</head>
+<body>
+    <main class="container">
+        <section class="form-wrapper">
+
+            <h1>Registration</h1>
+
+            <form id="registrationForm">
+
+                <div class="field">
+                    <label>First Name</label>
+                    <input type="text" id="firstName" required>
+                </div>
+
+                <div class="field">
+                    <label>Last Name</label>
+                    <input type="text" id="lastName" required>
+                </div>
+
+                <div class="field">
+                    <label for="address">Address</label>
+                    <textarea id="address" name="address" required></textarea>
+                </div>
+
+                <div class="field">
+                    <label for="unit">Unit</label>
+                    <select id="unit" name="unit" required>
+                        <option value="" disabled selected>Select your Unit</option>
+                        <option value="Smash 125">Smash 125</option>
+                        <option value="Wave">Wave</option>
+                        <option value="Raider 150 Carb">Raider 150 (Carb)</option>
+                        <option value="Raider 150 Fi">Raider 150 (Fi)</option>
+                        <option value="Raider 150 Blade">Raider 150 (Blade)</option>
+                        <option value="Raider 150 Pro">Raider 150 (Pro)</option>
+                        <option value="Sniper">Sniper</option>
+                        <option value="Rs">Rs</option>
+                        <option value="WinnerX">WinnerX</option>
+                        <option value="Rusi DL">Rusi (DL)</option>
+                        <option value="Rusi Flash">Rusi (Flash)</option>
+                        <option value="Rusi Flame">Rusi (Flame)</option>
+                        <option value="VPerman">VPerman</option>
+                    </select>
+                </div>
+
+                <button type="submit" id="submitBtn">Register</button>
+
+                <div id="message"></div>
+
+            </form>
+        </section>
+    </main>
+
+    <div id="successModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h2>Success!</h2>
+            <p>Your Attendance Account has been Created Successfully.</p>
+            <button id="modalOkBtn" class="primary-btn">OK</button>
+        </div>
+    </div>
+    <script src="registration.js"></script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Form</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+
+    <form id="loginForm">
+        <div id="eventStatus" class="event-status-banner">Waiting for Admin...</div>
+
+        <h1>ATTENDANCE</h1>
+        <input type="text" id="loginName" placeholder="Enter Full Name" required>
+        <button type="submit">submit</button>
+
+        <div id="loginMessage"></div>
+    </form>
+
+    <div id="successModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="success-icon">✔️</div>
+            <h2>Success!</h2>
+            <p>Successfully Attendanced</p>
+            <button id="modalOkBtn" class="primary-btn">OK</button>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="login.js"></script>
+</body>
+</html>

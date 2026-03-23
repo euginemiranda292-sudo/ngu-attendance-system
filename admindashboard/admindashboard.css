@@ -1,0 +1,587 @@
+:root { --glass-bg: rgba(255, 255, 255, 0.15); }
+
+body {
+    font-family: 'Courier New', Courier, monospace;
+    background-image: url('ngubg.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-color: rgba(0, 0, 0, 0.6);
+    background-blend-mode: overlay;
+    color: white;
+    margin: 0;
+}
+
+h2 {
+    text-align: center; 
+    font-weight: 600;
+    font-size: 50px;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    
+    /* Sticky Logic */
+    position: sticky;
+    top: 0;
+    z-index: 1000; /* Ensures it stays above tables and modals */
+    
+    /* Optional: subtle border to separate from content when scrolling */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nav-links { list-style: none; display: flex; gap: 20px; align-items: center; }
+.nav-links a { color: white; text-decoration: none; font-weight: bold; }
+.nav-links a.active { border-bottom: 2px solid white; }
+
+.dashboard-container { padding: 2rem; }
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.glass-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.glass-table th, .glass-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-table th { background: rgba(255, 255, 255, 0.2); }
+
+
+/* Normalized Button Style */
+.primary-btn {
+    padding: 0.6rem 1rem; /* Slightly reduced padding to fit side-by-side better */
+    background: white;
+    color: black;
+    border: 1px solid transparent; /* Invisible border to prevent 'jumping' on hover */
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.8rem; /* Controlled font size */
+    transition: all 0.2s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.primary-btn:hover {
+    background: black;
+    color: white;
+    border: 1px solid white; 
+}
+
+/* Specific styling for the Edit button to keep its gray color but match shape */
+.edit-btn {
+    background: #6b7280 !important; /* Gray */
+    color: white !important;
+}
+
+.edit-btn:hover {
+    background: #4b5563 !important; /* Darker gray on hover */
+    border: 1px solid white;
+}
+
+
+/* Date Accordion Buttons */
+.date-collapse-btn {
+    width: 100%;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    text-align: left;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+.date-collapse-btn:hover {
+    background: rgba(37, 99, 235, 0.4);
+    border-color: #2563eb;
+}
+
+.date-content {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 0 0 8px 8px;
+    padding: 10px;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.delete-date-btn {
+    background: rgba(220, 38, 38, 0.2);
+    border: 1px solid rgba(220, 38, 38, 0.5);
+    color: #ff8a8a;
+    padding: 0 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 0.9rem;
+}
+
+.delete-date-btn:hover {
+    background: rgba(220, 38, 38, 0.6);
+    color: white;
+}
+
+.accordion-header {
+    display: flex;
+    align-items: stretch; /* Makes both buttons the same height */
+}
+
+#logoutBtn {
+    background: rgba(220, 38, 38, 0.2); /* Soft red transparency */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(220, 38, 38, 0.4);
+    color: #ff8a8a; /* Light red text */
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.85rem;
+    outline: none;
+}
+
+#logoutBtn:hover {
+    background: rgba(220, 38, 38, 0.6); /* Darker red on hover */
+    border-color: rgba(220, 38, 38, 0.8);
+    color: white;
+    box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+    transform: translateY(-1px);
+}
+
+#logoutBtn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);
+}
+
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 2000;
+    padding: 20px;
+}
+
+/* Modal Box */
+.glass-effect {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 2rem;
+    border-radius: 15px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.modal-form { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
+
+.modal-form select {
+    padding: 12px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 1rem;
+}
+
+.modal-btns { display: flex; gap: 10px; margin-top: 10px; }
+
+.secondary-btn {
+    flex: 1;
+    background: transparent;
+    border: 1px solid white;
+    color: white;
+    padding: 10px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+#confirmLogBtn { flex: 1; }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.category-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+    transition: 0.3s;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.card-icon {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.view-btn {
+    width: 100%;
+    margin-top: 15px;
+    padding: 10px;
+    font-weight: bold;
+}
+
+/* Wide Modal for Table */
+.wide-modal {
+    max-width: 600px !important;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+}
+
+.modal-table-container {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+}
+
+.stats-body {
+    margin: 20px 0;
+    text-align: left;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.stats-body p {
+    margin: 10px 0;
+    font-size: 1.1rem;
+}
+
+#nguMemberGrid h4 {
+    margin-bottom: 5px;
+    color: #fff;
+}
+
+.modal-input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    outline: none;
+}
+
+/* Fixes for the calendar icon color in some browsers */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+}
+
+
+/* admindashboard.css - Modal Specifics */
+
+/* 1. centering the modal on screen */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6); /* Darker backdrop for focus */
+    display: flex; /* Key for centering */
+    justify-content: center; /* Horizontally center */
+    align-items: center; /* Vertically center */
+    z-index: 2000; /* Above navbar */
+    backdrop-filter: blur(5px); /* Nice background blur */
+}
+
+/* 2. The Modal Card Design */
+#editMemberModal .modal-content {
+    width: 90%;
+    max-width: 500px; /* Perfect width for forms */
+    border-radius: 15px;
+    padding: 25px;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    animation: modalSlideIn 0.3s ease; /* Entry animation */
+}
+
+/* 3. Header Styling */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 10px;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1.8rem;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close-btn:hover {
+    color: #ef4444; /* red */
+}
+
+/* 4. The Form Body & Labels */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two columns for names */
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group.full-width {
+    grid-column: span 2; /* address and unit take full row */
+}
+
+#editMemberModal label {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+/* 5. Input Styling */
+.modal-input {
+    width: 90%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.modal-input:focus {
+    outline: none;
+    border-color: #2563eb; /* Blue primary color */
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* 6. Action Buttons */
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end; /* Buttons on the right */
+}
+
+/* Entry Animation */
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* --- Mobile Responsiveness --- */
+
+/* 1. Global Layout Adjustments */
+@media (max-width: 768px) {
+    h2 {
+        font-size: 30px; /* Smaller title for mobile */
+    }
+
+    .dashboard-container {
+        padding: 1rem;
+    }
+
+    /* 2. Navbar Mobile Layout */
+    .navbar {
+        flex-direction: column;
+        gap: 15px;
+        padding: 1.5rem 1rem;
+        text-align: center;
+    }
+
+    .nav-links {
+        width: 100%;
+        justify-content: center;
+        padding: 0;
+        gap: 10px;
+        font-size: 0.9rem;
+    }
+
+    /* 3. Section Header (Title + Button) */
+    .section-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+
+    .primary-btn {
+        width: 100%; /* Full width button on mobile */
+    }
+
+    /* 4. The Table Hack for Mobile */
+    /* Instead of breaking the glass effect, we allow horizontal scrolling */
+    .content-section {
+        width: 100%;
+        overflow-x: auto; /* Enable horizontal scroll */
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .glass-table {
+        min-width: 600px; /* Ensures the table doesn't get too squashed */
+    }
+
+    /* 5. Date Accordion Headers */
+    .accordion-header {
+        flex-direction: row; /* Keep delete and date side by side */
+    }
+
+    .date-collapse-btn {
+        font-size: 0.9rem;
+        padding: 12px;
+    }
+
+    .delete-date-btn {
+        padding: 0 10px;
+        font-size: 0.8rem;
+    }
+}
+
+/* Extra small screens (Phones) */
+@media (max-width: 480px) {
+    .nav-links {
+        flex-wrap: wrap; /* Wrap links if screen is too narrow */
+    }
+    
+    .nav-links li {
+        width: 45%; /* Two links per row */
+        justify-content: center;
+    }
+
+    #logoutBtn {
+        width: 100%;
+        margin-top: 5px;
+    }
+}

@@ -1,0 +1,210 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body { 
+    font-family: 'Segoe UI', sans-serif; 
+    /* Professional Background */
+    background-image: url('ngubg.png'); 
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    
+    /* Overlay for readability */
+    background-color: rgba(0, 0, 0, 0.4); 
+    background-blend-mode: overlay;
+    
+    /* Centering Logic */
+    display: flex;
+    justify-content: center; /* Horizontally center */
+    align-items: center;     /* Vertically center */
+    min-height: 100vh;       /* Full screen height */
+    margin: 0;               /* Remove default browser margin */
+    padding: 20px;           /* Breathing room on mobile */
+}
+
+#loginForm {
+    font-family: 'Courier New', Courier, monospace;
+    /* Semi-transparent white background */
+    background: rgba(255, 255, 255, 0.2); 
+    
+    /* This creates the blur effect */
+    backdrop-filter: blur(10px); 
+    -webkit-backdrop-filter: blur(10px); /* For Safari support */
+    
+    /* Clean borders and shadow */
+    border: 1px solid rgba(255, 255, 255, 0.3); 
+    padding: 2rem; 
+    border-radius: 20px; 
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+}
+
+h1 {
+    text-align: center;
+    color: white;
+    margin-bottom: 10px;
+}
+
+input {
+    font-family: 'Courier New', Courier, monospace;
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    font-size: 16px;
+}
+
+button {
+    font-family: 'Courier New', Courier, monospace;
+    width: 100%;
+    padding: 12px;
+    background-color: transparent;
+    color: white;
+    border: 2px solid white;
+    border-radius: 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+button:hover { 
+    background-color: black;
+    color: white; 
+}
+
+#loginMessage {
+    text-align: center;
+    margin-top: 15px;
+    font-weight: 600;
+}
+
+/* Mobile Responsive adjustment */
+@media (max-width: 480px) {
+    #loginForm { padding: 1.5rem; }
+}
+
+/* Prompt Styling */
+.signup-prompt {
+    margin-top: 1.5rem;
+    border-top: 1px solid #ddd;
+    padding-top: 1.5rem;
+}
+
+.signup-prompt p {
+    font-size: 0.9rem;
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+/* Secondary Button (Outline Style) */
+.secondary-btn {
+     font-family: 'Courier New', Courier, monospace;
+    width: 100%;
+    padding: 12px;
+    background-color: transparent;
+    color: white;
+    border: 2px solid white;
+    border-radius: 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.secondary-btn:hover {
+    background-color: black;
+    color: white; 
+}
+
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Modal Box */
+.modal-content {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 2rem;
+    border-radius: 20px;
+    text-align: center;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    color: white;
+}
+
+.success-icon {
+    font-size: 50px;
+    color: #4bb543;
+    margin-bottom: 10px;
+}
+
+.modal-content h2 {
+    margin: 10px 0;
+    font-size: 2rem;
+}
+
+.modal-content p {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    opacity: 0.9;
+}
+
+/* OK Button Style */
+#modalOkBtn {
+    width: 100%;
+    padding: 12px;
+    background: #4bb543;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#modalOkBtn:hover {
+    background: #3a8d34;
+    transform: scale(1.02);
+}
+/* Update the existing event-status-banner style */
+.event-status-banner {
+    padding: 12px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    text-align: center;
+    /* Default State: Waiting/Closed */
+    background-color: rgba(239, 68, 68, 0.1); 
+    color: black;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.4s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Style for when the button is disabled */
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border-color: rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+button:disabled:hover {
+    background-color: transparent;
+    color: white;
+}

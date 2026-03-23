@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="admindashboard.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">Admin Panel</div>
+        <ul class="nav-links">
+            <li><a href="#" id="navHome" class="active">Home</a></li>
+            <li><a href="#" id="navDates">Dates Attended</a></li>
+            <li><a href="#" id="navNguMembers">NGU Members</a></li> 
+            <li><a href="#" id="navOfficial">Official Members</a></li>
+            <li><button id="logoutBtn">Logout</button></li>
+        </ul>
+    </nav>
+
+    <main class="dashboard-container">
+            <section id="homeSection" class="content-section">
+                <div style="margin-top: 20px; text-align: right;">
+                    <button id="resetAttendanceBtn" class="secondary-btn" style="background: #dc2626; color: white;">Reset Attendance</button>
+                </div>
+                <div class="section-header">
+                    <h2 id="currentEventTitle">Member List</h2>
+                    <button id="newAttendanceBtn" class="primary-btn">New Attendance</button>
+                </div>
+                <table class="glass-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Address</th>
+                            <th>Unit</th>
+                            </tr>
+                    </thead>
+                    <tbody id="userTableBody">
+                        </tbody>
+                </table>
+            </section>
+
+        <section id="datesSection" class="content-section" style="display: none;">
+            <h2>Attendance Records by Category</h2>
+            <div class="category-grid">
+                <div class="category-card">
+                    <div class="card-icon">❶</div>
+                    <h3>1st EB</h3>
+                    <p id="count-1st-eb">0 Members</p>
+                    <button class="primary-btn view-btn" onclick="openHistoryModal('Eye Ball (EB)', 1)">VIEW</button>
+                </div>
+                <div class="category-card">
+                    <div class="card-icon">❷</div>
+                    <h3>2nd EB</h3>
+                    <p id="count-2nd-eb">0 Members</p>
+                    <button class="primary-btn view-btn" onclick="openHistoryModal('Eye Ball (EB)', 2)">VIEW</button>
+                </div>
+                <div class="category-card">
+                    <div class="card-icon">❸</div>
+                    <h3>3rd EB</h3>
+                    <p id="count-3rd-eb">0 Members</p>
+                    <button class="primary-btn view-btn" onclick="openHistoryModal('Eye Ball (EB)', 3)">VIEW</button>
+                </div>
+                <div class="category-card">
+                    <div class="card-icon">🏍️</div>
+                    <h3>Long/Short Ride</h3>
+                    <p id="count-rides">0 Members</p>
+                    <button class="primary-btn view-btn" onclick="openHistoryModal('Ride', 0)">VIEW</button>
+                </div>
+            </div>
+
+            <h2 style="margin-top: 40px;">Archived Sessions</h2>
+            <div id="sessionButtonsContainer" class="category-grid">
+                </div>
+
+            <div id="historyViewModal" class="modal-overlay" style="display: none;">
+                <div class="modal-content glass-effect wide-modal">
+                    <div class="modal-header">
+                        <h3 id="historyModalTitle">Attendance List</h3>
+                        <button class="close-btn" onclick="closeHistoryModal()">×</button>
+                    </div>
+                    <div class="modal-table-container">
+                        <table class="glass-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Unit</th>
+                                    <th>Date & Time</th>
+                            </thead>
+                            <tbody id="historyModalTableBody"></tbody>
+                        </table>
+                    </div>
+                    <button class="secondary-btn" onclick="closeHistoryModal()">Close</button>
+                </div>
+            </div>
+        </section>
+
+
+
+
+
+        <section id="nguSection" class="content-section" style="display: none;">
+            <div class="section-header">
+                <h2>NGU Registered Members</h2>
+                <input type="text" id="memberSearch" placeholder="Search name or unit..." class="modal-input" style="width: 250px; margin-bottom: 0;">
+            </div>
+            <div id="nguMemberGrid" class="category-grid">
+                </div>
+        </section>
+
+        <section id="officialSection" class="content-section" style="display: none;">
+            <h2>Official Members (OM)</h2>
+            <p>Members who completed 3 EBs and 1 Ride.</p>
+            <table class="glass-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Address</th>
+                        <th>Unit</th>
+                    </tr>
+                </thead>
+                <tbody id="officialTableBody"></tbody>
+            </table>
+        </section>
+
+        <div id="userStatsModal" class="modal-overlay" style="display: none;">
+            <div class="modal-content glass-effect">
+                <h3 id="statsMemberName">User Name</h3>
+                <hr>
+                <div class="stats-body">
+                    <p><strong>EB Attended:</strong> <span id="statsEbCount">0</span></p>
+                    <p><strong>Short/Long Rides:</strong> <span id="statsRideCount">0</span></p>
+                </div>
+                <button class="secondary-btn" onclick="closeStatsModal()">Close</button>
+            </div>
+        </div>
+    </main>
+
+    <div id="attendanceModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content glass-effect">
+            <h3>Setup New Attendance</h3>
+            <p>This will move current members to history and clear the active list.</p>
+            
+            <div class="modal-form">
+                <label for="eventCategory">Category (For):</label>
+                <select id="eventCategory">
+                    <option value="Eye Ball (EB)">Eye Ball (EB)</option>
+                    <option value="Long Rides">Long Rides</option>
+                    <option value="Short Ride">Short Ride</option>
+                </select>
+
+                <label for="eventDate" style="margin-top: 10px; display: block;">Date:</label>
+                <input type="date" id="eventDate" class="modal-input">
+                
+                <div class="modal-btns">
+                    <button id="cancelModalBtn" class="secondary-btn">Cancel</button>
+                    <button id="confirmLogBtn" class="primary-btn">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editMemberModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content glass-effect">
+            <div class="modal-header">
+                <h3>Edit Member Details</h3>
+                <button class="close-btn" onclick="closeEditModal()">×</button>
+            </div>
+            
+            <input type="hidden" id="editOriginalName"> 
+            
+            <div class="modal-body form-grid">
+                <div class="form-group">
+                    <label for="editFirstName">First Name</label>
+                    <input type="text" id="editFirstName" class="modal-input" placeholder="e.g., Dan">
+                </div>
+                
+                <div class="form-group">
+                    <label for="editLastName">Last Name</label>
+                    <input type="text" id="editLastName" class="modal-input" placeholder="e.g., Llona">
+                </div>
+                
+                <div class="form-group full-width">
+                    <label for="editAddress">Address</label>
+                    <input type="text" id="editAddress" class="modal-input" placeholder="e.g., Daraga, Albay">
+                </div>
+                
+                <div class="form-group full-width">
+                    <label for="editUnit">Unit (Model)</label>
+                    <input type="text" id="editUnit" class="modal-input" placeholder="e.g., Raider 150 Fi">
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="primary-btn" id="saveEditBtn">SAVE CHANGES</button>
+                <button class="secondary-btn cancel-btn" onclick="closeEditModal()">CANCEL</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="admindashboard.js"></script>
+</body>
+</html>

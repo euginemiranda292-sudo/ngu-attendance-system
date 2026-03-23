@@ -208,7 +208,7 @@ transporter.verify(function (error, success) {
   //== THIS ROUTE IS WHEN A USER VISIT THE MAIN WEBSITE URL ("https://sx01rkvb-3000.asse.devtunnels.ms") ==||
 //=========================================================================================================||
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "login", "index.html"));
+  res.sendFile(path.join(__dirname, "login", "login.html"));
 });
 
 

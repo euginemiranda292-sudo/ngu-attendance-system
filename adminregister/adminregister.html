@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Registration</title>
+    <link rel="stylesheet" href="adminregister.css">
+</head>
+<body>
+    <main class="container">
+        <section class="form-wrapper">
+            <h1>Admin Registration</h1>
+            <form id="adminRegisterForm">
+                <div class="field">
+                    <label>Email Address</label>
+                    <input type="email" id="email" placeholder="admin@example.com" required>
+                </div>
+
+                <div class="field">
+                    <label for="unit">Unit</label>
+                    <select id="unit" required>
+                        <option value="" disabled selected>Select Unit</option>
+                        <option value="Smash 125">Smash 125</option>
+                        <option value="Wave">Wave</option>
+                        <option value="Raider 150 Carb">Raider 150 (Carb)</option>
+                        <option value="Raider 150 Fi">Raider 150 (Fi)</option>
+                        <option value="Raider 150 Pro">Raider 150 (Pro)</option>
+                        <option value="Sniper">Sniper</option>
+                        <option value="Rs">Rs</option>
+                        <option value="WinnerX">WinnerX</option>
+                        <option value="Rusi DL">Rusi (DL)</option>
+                        <option value="Rusi Flash">Rusi (Flash)</option>
+                        <option value="Rusi Flame">Rusi (Flame)</option>
+                        <option value="VPerman">VPerman</option>
+                    </select>
+                </div>
+
+                <div class="field password-container">
+                    <label>Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="password" required>
+                        <button type="button" id="togglePassword">👁️</button>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Confirm Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="confirmPassword" required>
+                        </div>
+                </div>
+
+                <button type="submit" id="submitBtn">Create Admin Account</button>
+                <div id="message"></div>
+
+                <div class="login-prompt">
+                    <p>Already created an admin account?</p>
+                    <button type="button" id="loginRedirectBtn" class="secondary-btn">LOGIN</button>
+                </div>
+
+                <div id="loadingOverlay" class="loading-overlay">
+                    <div class="spinner"></div>
+                    <p>Redirecting to Login...</p>
+                </div>
+            </form>
+        </section>
+    </main>
+    <script src="adminregister.js"></script>
+</body>
+</html>
