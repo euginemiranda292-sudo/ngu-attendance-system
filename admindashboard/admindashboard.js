@@ -558,16 +558,16 @@ async function loadCurrentSessionUsers(eventType, eventDate) {
         if (result.success) {
             // Filter history for only this session's records
             const sessionUsers = result.data.filter(record => {
-                // 1. Normalize the Date from the database
-                const year = d.getFullYear();
-                const month = String(d.getMonth() + 1).padStart(2, '0');
-                const day = String(d.getDate()).padStart(2, '0');
+                // 1. Create the date object FIRST
                 const d = new Date(record.attendance_date);
+                
+                // 2. Format to YYYY-MM-DD
                 const recordDateFormatted = d.toISOString().split('T')[0];
 
-                // 2. Exact match check for Category AND Date
+                // 3. Compare with the active session details
+                // .trim() handles any accidental spaces in the database string
                 return record.event_name.trim() === eventType.trim() && 
-                    recordDateFormatted === eventDate;
+                       recordDateFormatted === eventDate;
             });
 
             userTableBody.innerHTML = ''; 

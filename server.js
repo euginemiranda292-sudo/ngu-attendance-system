@@ -100,21 +100,23 @@ app.post('/api/admin/clear-session', (req, res) => {
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
-  // --- NEW: When a user/admin connects, immediately send them the current session if it exists ---
-  if (activeSession) {
-    socket.emit('session-opened', activeSession);
-  }
-
-  // When admin opens a session
-  socket.on('admin-open-session', (data) => {
-    activeSession = data; // Save the session globally on the server
-    io.emit('session-opened', data); // Tell everyone
+  // Instead of checking a local variable, pull from the DB for new connections
+  db.query("SELECT event_type as eventType, event_date as eventDate FROM current_session WHERE id = 1", (err, results) => {
+      if (!err && results.length > 0) {
+          const session = results[0];
+          const d = new Date(session.eventDate);
+          session.eventDate = d.toISOString().split('T')[0];
+          socket.emit('session-opened', session);
+      }
   });
 
-  // When admin closes/resets session
+  socket.on('admin-open-session', (data) => {
+    // Broadcast the new session to everyone immediately
+    io.emit('session-opened', data);
+  });
+
   socket.on('admin-close-session', () => {
-    activeSession = null; // Clear the global session
-    io.emit('session-closed'); // Tell everyone
+    io.emit('session-closed');
   });
 
   socket.on("disconnect", () => {
