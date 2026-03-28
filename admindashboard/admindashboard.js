@@ -1,5 +1,6 @@
 // Connect to your specific dev tunnel URL
-const socket = io('https://sx01rkvb-3000.asse.devtunnels.ms/');
+// This tells Socket.io to connect to the same server that is hosting the page
+const socket = io();
 
 socket.on('new-user-login', async (userData) => {
     const userTableBody = document.getElementById('userTableBody');
@@ -558,16 +559,15 @@ async function loadCurrentSessionUsers(eventType, eventDate) {
             // Filter history for only this session's records
             const sessionUsers = result.data.filter(record => {
                 // 1. Normalize the Date from the database
-                // Instead of toISOString(), we manually extract Year, Month, Day
-                const d = new Date(record.attendance_date);
                 const year = d.getFullYear();
                 const month = String(d.getMonth() + 1).padStart(2, '0');
                 const day = String(d.getDate()).padStart(2, '0');
-                const recordDateFormatted = `${year}-${month}-${day}`;
+                const d = new Date(record.attendance_date);
+                const recordDateFormatted = d.toISOString().split('T')[0];
 
                 // 2. Exact match check for Category AND Date
                 return record.event_name.trim() === eventType.trim() && 
-                       recordDateFormatted === eventDate;
+                    recordDateFormatted === eventDate;
             });
 
             userTableBody.innerHTML = ''; 

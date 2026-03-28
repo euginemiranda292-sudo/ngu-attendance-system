@@ -64,21 +64,37 @@ let activeSession = null; // Store current event { eventType, eventDate }
 
 // When admin starts a new attendance
 app.post('/api/admin/open-session', (req, res) => {
-    activeSession = req.body; // Set the global session
-    res.json({ success: true });
+    const { eventType, eventDate } = req.body;
+    const sql = `
+        INSERT INTO current_session (id, event_type, event_date) 
+        VALUES (1, ?, ?) 
+        ON DUPLICATE KEY UPDATE event_type = VALUES(event_type), event_date = VALUES(event_date)
+    `;
+    db.query(sql, [eventType, eventDate], (err) => {
+        if (err) return res.status(500).json({ success: false });
+        res.json({ success: true });
+    });
 });
 
 app.get('/api/admin/active-session', (req, res) => {
-    if (!activeSession) {
-        return res.json({ success: true, activeSession: null });
-    }
-    res.json({ success: true, activeSession });
+    db.query("SELECT event_type as eventType, event_date as eventDate FROM current_session WHERE id = 1", (err, results) => {
+        if (err || results.length === 0) return res.json({ success: true, activeSession: null });
+        
+        // Format the date to YYYY-MM-DD for the frontend
+        const session = results[0];
+        const d = new Date(session.eventDate);
+        session.eventDate = d.toISOString().split('T')[0];
+        
+        res.json({ success: true, activeSession: session });
+    });
 });
 
 // When admin resets/clears
 app.post('/api/admin/clear-session', (req, res) => {
-    activeSession = null; // Clear it so checkActiveSession() returns null
-    res.json({ success: true });
+    db.query("DELETE FROM current_session WHERE id = 1", (err) => {
+        if (err) return res.status(500).json({ success: false });
+        res.json({ success: true });
+    });
 });
 
 io.on("connection", (socket) => {
