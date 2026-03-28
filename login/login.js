@@ -1,5 +1,5 @@
 // Connect to your dev tunnel
-const socket = io('https://sx01rkvb-3000.asse.devtunnels.ms/');
+const socket = io();
 
 const loginBtn = document.querySelector('#loginForm button');
 const eventStatus = document.getElementById('eventStatus');
