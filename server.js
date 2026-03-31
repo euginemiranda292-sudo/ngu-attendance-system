@@ -62,18 +62,28 @@ global.io = io;
 // Keep this variable at the top level so it doesn't reset when a user connects/disconnects
 let activeSession = null; // Store current event { eventType, eventDate }
 
-// When admin starts a new attendance
-app.post('/api/admin/open-session', (req, res) => {
+// server.js snippet
+app.post('/api/admin/open-session', async (req, res) => {
     const { eventType, eventDate } = req.body;
-    const sql = `
-        INSERT INTO current_session (id, event_type, event_date) 
-        VALUES (1, ?, ?) 
-        ON DUPLICATE KEY UPDATE event_type = VALUES(event_type), event_date = VALUES(event_date)
-    `;
-    db.query(sql, [eventType, eventDate], (err) => {
-        if (err) return res.status(500).json({ success: false });
-        res.json({ success: true });
-    });
+
+    try {
+        // Update the single row in your new current_session table
+        const query = `
+            UPDATE current_session 
+            SET event_type = ?, event_date = ? 
+            WHERE id = 1
+        `;
+        
+        await db.execute(query, [eventType, eventDate]);
+
+        // Also update your local variable so checkActiveSession works immediately
+        activeSession = { eventType, eventDate };
+
+        res.json({ success: true, message: "Session opened successfully" });
+    } catch (err) {
+        console.error("Database Error in open-session:", err);
+        res.status(500).json({ success: false, message: "Server database error" });
+    }
 });
 
 app.get('/api/admin/active-session', (req, res) => {

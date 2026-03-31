@@ -560,6 +560,7 @@ async function loadCurrentSessionUsers(eventType, eventDate) {
             const sessionUsers = result.data.filter(record => {
                 // 1. Create the date object FIRST
                 const d = new Date(record.attendance_date);
+                if (isNaN(d)) return false;
                 
                 // 2. Format to YYYY-MM-DD
                 const recordDateFormatted = d.toISOString().split('T')[0];
