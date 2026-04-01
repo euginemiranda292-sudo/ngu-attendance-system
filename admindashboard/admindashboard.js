@@ -404,9 +404,15 @@ function renderSessionButtons() {
 
     const sessions = {};
     processedHistory.forEach(record => {
-        const dateFormatted = new Date(record.attendance_date).toLocaleDateString();
+        const rawDate = record.attendance_date;
+        const dateObj = new Date(rawDate);
+        const dateFormatted = !isNaN(dateObj) ? dateObj.toLocaleDateString() : "Invalid Date";
         const key = `${record.event_name} - ${dateFormatted}`;
-        if (!sessions[key]) sessions[key] = { rawDate: record.attendance_date, name: record.event_name, data: [] };
+        if (!sessions[key]) sessions[key] = { 
+            name: record.event_name, 
+            date: record.attendance_date, 
+            data: [] 
+        };
         sessions[key].data.push(record);
     });
 
@@ -415,19 +421,42 @@ function renderSessionButtons() {
         const card = document.createElement('div');
         card.className = 'category-card';
         
-        // Removed the <button class="delete-session-btn"> element here
         card.innerHTML = `
             <h3>${sessionKey}</h3>
             <p>${session.data.length} Attended</p>
-            <button class="primary-btn view-btn">VIEW LIST</button>
+            <div style="display: flex; gap: 8px; margin-top: 10px;">
+                <button class="primary-btn view-btn" style="flex: 2;">VIEW LIST</button>
+                <button class="secondary-btn delete-session-btn" style="flex: 1; background: #dc2626;">DELETE</button>
+            </div>
         `;
 
-        // View List Click remains active
         card.querySelector('.view-btn').onclick = () => openSpecificSessionModal(sessionKey, session.data);
+        
+        // Delete Logic
+        card.querySelector('.delete-session-btn').onclick = async () => {
+            if (!confirm(`Delete all records for ${sessionKey}?`)) return;
+            try {
+                const res = await fetch('/api/admin/delete-session', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        eventName: session.name, 
+                        eventDate: new Date(session.date).toISOString().split('T')[0] 
+                    })
+                });
+                if (res.ok) {
+                    alert("Session deleted.");
+                    loadAttendanceHistory();
+                }
+            } catch (err) {
+                alert("Error deleting session.");
+            }
+        };
         
         container.appendChild(card);
     });
 }
+
 
 // Shared function to render the history table with a delete button
 function renderHistoryRows(data) {

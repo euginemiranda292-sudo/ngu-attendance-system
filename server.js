@@ -398,61 +398,79 @@ app.post("/api/register", async (req, res) => {
 app.post("/api/login", async (req, res) => {
     const { name } = req.body;
     const searchTerm = name.trim();
-    
-    // Check if a session is active, otherwise use defaults
-    const attendanceDate = activeSession ? activeSession.eventDate : new Date().toISOString().slice(0, 10);
-    const eventName = activeSession ? activeSession.eventType : "General Check-in";
+    const promiseDb = db.promise();
 
     try {
-        const promiseDb = db.promise();
+        // --- FIX 1: RECOVER SESSION IF MEMORY IS EMPTY ---
+        let sessionToUse = activeSession;
+        
+        if (!sessionToUse) {
+            const [sessionRows] = await promiseDb.query("SELECT event_type, event_date FROM current_session WHERE id = 1");
+            if (sessionRows.length > 0 && sessionRows[0].event_type !== null) {
+                sessionToUse = {
+                    eventType: sessionRows[0].event_type,
+                    eventDate: sessionRows[0].event_date.toISOString().split('T')[0]
+                };
+                // Sync back to memory so the next login is faster
+                activeSession = sessionToUse;
+            }
+        }
 
-        // 1. FIRST, find the user in the 'users' table
+        // Set variables based on recovered or active session
+        const attendanceDate = sessionToUse ? sessionToUse.eventDate : new Date().toISOString().slice(0, 10);
+        const eventName = sessionToUse ? sessionToUse.eventType : "General Check-in";
+
+        // 1. Find the user
         const query = `
-            SELECT CONCAT(first_name, ' ', last_name) AS name, address, unit, created_at 
+            SELECT CONCAT(first_name, ' ', last_name) AS name, address, unit 
             FROM users 
             WHERE first_name = ? 
                OR last_name = ?
                OR CONCAT(first_name, ' ', last_name) = ?
         `;
-        
         let [results] = await promiseDb.query(query, [searchTerm, searchTerm, searchTerm]);
 
-        // 1.5 If no exact match, try matching the beginning of the name (Partial Match)
+        // Partial Match Fallback
         if (results.length === 0) {
-            const partialQuery = `SELECT CONCAT(first_name, ' ', last_name) AS name, address, unit, created_at 
+            const partialQuery = `SELECT CONCAT(first_name, ' ', last_name) AS name, address, unit 
                                   FROM users WHERE first_name LIKE ? LIMIT 1`;
             [results] = await promiseDb.query(partialQuery, [`${searchTerm}%`]);
         }
 
-        // 2. If we found a user, check if they already attended TODAY
         if (results.length > 0) {
             const user = results[0];
 
+            // 2. Check for duplicate attendance for THIS SESSION'S DATE
             const checkHistorySql = `
-                SELECT * FROM attendance_history 
-                WHERE name = ? AND attendance_date = ?
+                SELECT id FROM attendance_history 
+                WHERE name = ? AND attendance_date = ? AND event_name = ?
             `;
-            const [historyResults] = await promiseDb.query(checkHistorySql, [user.name, attendanceDate]);
+            const [historyResults] = await promiseDb.query(checkHistorySql, [user.name, attendanceDate, eventName]);
 
             if (historyResults.length > 0) {
                 return res.json({ 
                     success: false, 
                     alreadyAttended: true, 
-                    message: "Nakapag attendance ka na IYOOOOO!!! Ulit Ulit YARN?" 
+                    message: "Nakapag attendance ka na IYOOOOO!!!" 
                 });
             }
 
-            // 3. AUTO-SAVE to history immediately
+            // 3. Save with the session's specific date and name
             const saveSql = "INSERT INTO attendance_history (name, address, unit, attendance_date, event_name) VALUES (?, ?, ?, ?, ?)";
             await promiseDb.query(saveSql, [user.name, user.address, user.unit, attendanceDate, eventName]);
 
-            // Notify Admin via Socket.io
-            io.emit('new-user-login', { ...user, attendance_date: attendanceDate });
+            // Notify Admin
+            io.emit('new-user-login', { 
+                name: user.name, 
+                address: user.address, 
+                unit: user.unit, 
+                event_name: eventName, 
+                attendance_date: attendanceDate 
+            });
             
             return res.json({ success: true, user: user });
 
         } else {
-            // No user found at all
             return res.json({ success: false, message: "Unknown Member" });
         }
 
@@ -461,7 +479,6 @@ app.post("/api/login", async (req, res) => {
         res.status(500).json({ success: false, message: "Database error" });
     }
 });
-
 
 
 app.get('/api/admin/users', (req, res) => {
@@ -614,6 +631,35 @@ app.put('/api/admin/update-member', async (req, res) => {
     }
 });
 
+
+
+// Add this to your server.js
+app.delete('/api/admin/delete-session', async (req, res) => {
+    const { eventName, eventDate } = req.body;
+
+    // Basic validation to prevent deleting everything if data is missing
+    if (!eventName || !eventDate) {
+        return res.status(400).json({ success: false, message: "Missing session details." });
+    }
+
+    try {
+        const promiseDb = db.promise();
+        
+        // This deletes every user record that matches that specific Event Name and Date
+        const [result] = await promiseDb.query(
+            "DELETE FROM attendance_history WHERE event_name = ? AND attendance_date = ?",
+            [eventName.trim(), eventDate]
+        );
+
+        res.json({ 
+            success: true, 
+            message: `Deleted ${result.affectedRows} records from ${eventName}.` 
+        });
+    } catch (err) {
+        console.error("Delete Error:", err);
+        res.status(500).json({ success: false, message: "Database error during deletion." });
+    }
+});
 
 
 //===================================||

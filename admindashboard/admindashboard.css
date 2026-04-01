@@ -585,3 +585,31 @@ input[type="date"]::-webkit-calendar-picker-indicator {
         margin-top: 5px;
     }
 }
+
+/* Ensure the card can fit the new buttons */
+.category-card {
+    min-height: 180px; /* Increase this if buttons are still hidden */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+/* Ensure the button container is visible */
+.category-card div {
+    margin-top: auto; /* Pushes buttons to the bottom */
+}
+
+/* Optional: Make the delete button look distinct */
+.delete-session-btn {
+    font-size: 0.75rem;
+    padding: 8px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.delete-session-btn:hover {
+    opacity: 0.8;
+}
