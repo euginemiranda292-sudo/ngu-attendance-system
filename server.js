@@ -40,6 +40,21 @@ async function sendTelerivetSMS(phone, message) {
   });
 }
 
+//=============================================================||
+  //== These lines let your server open your HTML pages, ======||
+  //== images, and scripts, accept data from forms, accept ====||
+  //== JSON from fetch(), and keep cookies working properly. ==||
+//=============================================================||
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use(express.static("registration"));
+app.use(express.static("login"));
+app.use(express.static("adminregister"));
+app.use(express.static("adminlogin"));
+app.use(express.static("admindashboard"));
+app.use(express.json());   
+app.use(express.urlencoded({ extended: true }));
+app.set('trust proxy', 1); 
+
 
 
 
@@ -62,25 +77,28 @@ global.io = io;
 // Keep this variable at the top level so it doesn't reset when a user connects/disconnects
 let activeSession = null; // Store current event { eventType, eventDate }
 
-// 1. FIXED: Start/Update Session
 app.post('/api/admin/open-session', (req, res) => {
+    console.log("BODY:", req.body); // 👈 ADD THIS
+
     const { eventType, eventDate } = req.body;
+
+    if (!eventType || !eventDate) {
+        return res.status(400).json({ message: "Missing data" });
+    }
 
     const query = `
         INSERT INTO current_session (id, event_type, event_date) 
         VALUES (1, ?, ?) 
         ON DUPLICATE KEY UPDATE event_type = VALUES(event_type), event_date = VALUES(event_date)
     `;
-    
+
     db.query(query, [eventType, eventDate], (err, result) => {
         if (err) {
             console.error("Database Error in open-session:", err);
-            return res.status(500).json({ success: false, message: "Server database error" });
+            return res.status(500).json({ success: false, message: err.message }); // 👈 show real error
         }
-        
-        // Update local variable
-        activeSession = { eventType, eventDate };
-        res.json({ success: true, message: "Session opened successfully" });
+
+        res.json({ success: true });
     });
 });
 
@@ -146,23 +164,6 @@ io.on("connection", (socket) => {
   //== our server will run. ===========||
 //=====================================||
 const PORT = process.env.PORT || 3000;
-
-
-//=============================================================||
-  //== These lines let your server open your HTML pages, ======||
-  //== images, and scripts, accept data from forms, accept ====||
-  //== JSON from fetch(), and keep cookies working properly. ==||
-//=============================================================||
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use(express.static("registration"));
-app.use(express.static("login"));
-app.use(express.static("adminregister"));
-app.use(express.static("adminlogin"));
-app.use(express.static("admindashboard"));
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());   
-app.use(express.urlencoded({ extended: true }));
-app.set('trust proxy', 1); 
 
 
 //==============================================================================||

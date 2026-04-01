@@ -105,12 +105,17 @@ confirmLogBtn.addEventListener('click', async () => {
     }
 
     try {
-        // 1. Save the session to the server
-        await fetch('/api/admin/open-session', {
+       const res = await fetch('/api/admin/open-session', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ eventType, eventDate })
         });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data.message || "Server error");
+        }
 
         // 2. Update the Title immediately
         document.getElementById('currentEventTitle').innerText = `${eventType} - ${eventDate}`;
