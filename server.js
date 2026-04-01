@@ -62,47 +62,54 @@ global.io = io;
 // Keep this variable at the top level so it doesn't reset when a user connects/disconnects
 let activeSession = null; // Store current event { eventType, eventDate }
 
-// server.js snippet
-app.post('/api/admin/open-session', async (req, res) => {
+// 1. FIXED: Start/Update Session
+app.post('/api/admin/open-session', (req, res) => {
     const { eventType, eventDate } = req.body;
 
-    try {
-        // Update the single row in your new current_session table
-        const query = `
-            UPDATE current_session 
-            SET event_type = ?, event_date = ? 
-            WHERE id = 1
-        `;
+    const query = `
+        INSERT INTO current_session (id, event_type, event_date) 
+        VALUES (1, ?, ?) 
+        ON DUPLICATE KEY UPDATE event_type = VALUES(event_type), event_date = VALUES(event_date)
+    `;
+    
+    db.query(query, [eventType, eventDate], (err, result) => {
+        if (err) {
+            console.error("Database Error in open-session:", err);
+            return res.status(500).json({ success: false, message: "Server database error" });
+        }
         
-        await db.execute(query, [eventType, eventDate]);
-
-        // Also update your local variable so checkActiveSession works immediately
+        // Update local variable
         activeSession = { eventType, eventDate };
-
         res.json({ success: true, message: "Session opened successfully" });
-    } catch (err) {
-        console.error("Database Error in open-session:", err);
-        res.status(500).json({ success: false, message: "Server database error" });
-    }
+    });
 });
 
+// 2. FIXED: Check Active Session (with date formatting)
 app.get('/api/admin/active-session', (req, res) => {
     db.query("SELECT event_type as eventType, event_date as eventDate FROM current_session WHERE id = 1", (err, results) => {
-        if (err || results.length === 0) return res.json({ success: true, activeSession: null });
+        if (err) return res.status(500).json({ success: false });
         
-        // Format the date to YYYY-MM-DD for the frontend
+        if (results.length === 0 || !results[0].eventType) {
+            return res.json({ success: true, activeSession: null });
+        }
+
         const session = results[0];
-        const d = new Date(session.eventDate);
-        session.eventDate = d.toISOString().split('T')[0];
+        // Ensure date is string YYYY-MM-DD
+        if (session.eventDate) {
+            const d = new Date(session.eventDate);
+            session.eventDate = d.toISOString().split('T')[0];
+        }
         
         res.json({ success: true, activeSession: session });
     });
 });
 
-// When admin resets/clears
+// 3. FIXED: Clear Session
 app.post('/api/admin/clear-session', (req, res) => {
-    db.query("DELETE FROM current_session WHERE id = 1", (err) => {
+    const query = "UPDATE current_session SET event_type = NULL, event_date = NULL WHERE id = 1";
+    db.query(query, (err) => {
         if (err) return res.status(500).json({ success: false });
+        activeSession = null; // Clear local variable too
         res.json({ success: true });
     });
 });
