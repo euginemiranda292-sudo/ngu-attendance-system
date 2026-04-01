@@ -102,22 +102,41 @@ app.post('/api/admin/open-session', (req, res) => {
     });
 });
 
-// 2. FIXED: Check Active Session (with date formatting)
+// --- 1. Move Table Initialization OUTSIDE the route ---
+// This runs once when the server starts, not every time a user visits the site.
+db.query(`
+    CREATE TABLE IF NOT EXISTS current_session (
+        id INT NOT NULL PRIMARY KEY,
+        event_type VARCHAR(255),
+        event_date DATE
+    )
+`, (err) => {
+    if (!err) {
+        db.query(`INSERT IGNORE INTO current_session (id, event_type, event_date) VALUES (1, NULL, NULL)`);
+    }
+});
+
+// --- 2. FIXED Active Session Route ---
 app.get('/api/admin/active-session', (req, res) => {
     db.query("SELECT event_type as eventType, event_date as eventDate FROM current_session WHERE id = 1", (err, results) => {
-        if (err) return res.status(500).json({ success: false });
+        if (err) {
+            console.error("Error fetching session:", err);
+            return res.status(500).json({ success: false });
+        }
         
         if (results.length === 0 || !results[0].eventType) {
             return res.json({ success: true, activeSession: null });
         }
 
         const session = results[0];
-        // Ensure date is string YYYY-MM-DD
+        
+        // Format the date correctly for the frontend input fields
         if (session.eventDate) {
             const d = new Date(session.eventDate);
             session.eventDate = d.toISOString().split('T')[0];
         }
         
+        // Only ONE res.json() call allowed here
         res.json({ success: true, activeSession: session });
     });
 });
