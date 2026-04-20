@@ -159,29 +159,33 @@ function getOfficialMemberNames() {
     const counts = {};
     processedHistory.forEach(record => {
         if (!counts[record.name]) counts[record.name] = { eb: 0, ride: 0 };
-        if (record.event_name === 'Eye Ball (EB)') counts[record.name].eb++;
+        
+        // Use .includes() to catch "Eye Ball (EB)" and combined names
+        if (record.event_name.includes('Eye Ball')) counts[record.name].eb++;
+        
+        // Catches "Long Rides", "Short Ride", and the combined ones
         if (record.event_name.includes('Ride')) counts[record.name].ride++;
     });
 
-    // Return names of those who meet 3 EB + 1 Ride
     return Object.keys(counts).filter(name => counts[name].eb >= 3 && counts[name].ride >= 1);
 }
 
 // --- Modified Filter (To exclude Official Members) ---
 function filterByCategory(type, occurrence) {
-    const officialNames = getOfficialMemberNames();
     const userAttendanceCount = {};
     const sortedHistory = [...processedHistory].sort((a, b) => new Date(a.attendance_date) - new Date(b.attendance_date));
     const results = [];
 
     sortedHistory.forEach(record => {
-        // SKIP if this person is already an Official Member
-        if (officialNames.includes(record.name)) return;
+        // Skip Official Members if that's still your requirement
+        if (officialNames.includes(record.name)) return; 
 
         const isRide = record.event_name.includes("Ride");
+        const isEB = record.event_name.includes("Eye Ball");
+
         if (type === 'Ride' && isRide) {
             results.push(record);
-        } else if (type === 'Eye Ball (EB)' && record.event_name === 'Eye Ball (EB)') {
+        } else if (type === 'Eye Ball (EB)' && isEB) {
             userAttendanceCount[record.name] = (userAttendanceCount[record.name] || 0) + 1;
             if (userAttendanceCount[record.name] === occurrence) {
                 results.push(record);
@@ -190,7 +194,6 @@ function filterByCategory(type, occurrence) {
     });
     return results;
 }
-
 
 let allNguMembers = [];
 
@@ -309,7 +312,9 @@ document.getElementById('memberSearch').addEventListener('input', (e) => {
 function openStatsModal(name) {
     const stats = processedHistory.reduce((acc, curr) => {
         if (curr.name === name) {
-            if (curr.event_name === 'Eye Ball (EB)') acc.eb++;
+            // Check for EB (Single or Combined)
+            if (curr.event_name.includes('Eye Ball')) acc.eb++;
+            // Check for Ride (Single or Combined)
             if (curr.event_name.includes('Ride')) acc.ride++;
         }
         return acc;
